@@ -4,34 +4,36 @@ from scipy.spatial import cKDTree
 from skimage import measure
 import trimesh
 from trimesh.smoothing import filter_laplacian
+from objects import Sphere, Cylinder, Tube  # Import the shape classes
 
 # ───── PARAMETERS ─────
 R_sphere   = 1.0    # for sampling points; bounding box is [-R_sphere,R_sphere]^3
+H_cylinder = 2.0    # height of the cylinder
+R_cylinder = 1.0    # radius of the cylinder
 N_pts      = 120     # number of random points
 k_nn       = 6      # connect each point to its k nearest neighbors
 r_tube     = 0.04   # radius of each tube
 res        = 100    # grid resolution (res³ voxels)
 sigma_blur = 0.5    # smooth the implicit field
 lap_iters  = 15     # mesh Laplacian smoothing
-connection_type = "nearest"  # Options: "nearest" or "random"
+connection_type = "random"  # Options: "nearest" or "random"
 distribution_type = "surface"  # Options: "inside" or "surface"
+shape_type = "tube"  # Options: "sphere", "cylinder", or "tube"
+R_inner_tube = 0.5  # inner radius of the tube
+R_outer_tube = 1.0  # outer radius of the tube
 
-# ───── 1) SAMPLE POINTS inside the sphere (rejection sampling) ─────
-points = []
+# ───── 1) SAMPLE POINTS using Sphere, Cylinder, or Tube class ─────
+if shape_type == "sphere":
+    shape = Sphere(R_sphere)
+elif shape_type == "cylinder":
+    shape = Cylinder(R_cylinder, H_cylinder)
+elif shape_type == "tube":
+    shape = Tube(R_inner_tube, R_outer_tube, H_cylinder)
+
 if distribution_type == "inside":
-    while len(points) < N_pts:
-        p = np.random.uniform(-R_sphere, R_sphere, size=3)
-        if p.dot(p) <= R_sphere**2:
-            points.append(p)
-
+    points = shape.generate_points_inside(N_pts)
 elif distribution_type == "surface":
-    while len(points) < N_pts:
-        p = np.random.normal(size=3)
-        p /= np.linalg.norm(p)  # Normalize to unit vector
-        p *= R_sphere          # Scale to sphere surface
-        points.append(p)
-
-points = np.array(points)
+    points = shape.generate_points_on_surface(N_pts)
 
 # ───── 2) FIND CONNECTION PAIRS ─────
 if connection_type == "nearest":
@@ -91,5 +93,5 @@ mesh = trimesh.Trimesh(vertices=verts, faces=faces,
 filter_laplacian(mesh, iterations=lap_iters)
 
 # ───── 9) EXPORT ─────
-mesh.export('point_web.stl')
-print("Exported → point_web.stl")
+mesh.export('output/point_web.stl')
+print("Exported → output/point_web.stl")
