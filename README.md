@@ -13,10 +13,14 @@ This project generates organic 3D objects based on user-defined parameters. The 
 ## Requirements
 
 - Python 3.7 or higher
+- CUDA-enabled GPU
 - Install required Python packages using the `requirements.txt` file:
   ```bash
   pip install -r requirements.txt
   ```
+- **Important**: The `requirements.txt` file includes `cupy-cuda12x` by default (for CUDA 12.x). 
+  - If you have **CUDA 11.x**, edit `requirements.txt` to use `cupy-cuda11x` instead.
+  - If you have a different version, check the [CuPy installation guide](https://docs.cupy.dev/en/stable/install.html) for the correct package name.
 
 ## Usage
 
