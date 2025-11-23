@@ -24,10 +24,18 @@ This project generates organic 3D objects based on user-defined parameters. The 
 
 ## Usage
 
+### Command Line Interface
 Run the script with the desired parameters:
 
 ```bash
 python generator.py --shape_type sphere --distribution_type inside --connection_type nearest --output output/point_web.stl
+```
+
+### Graphical User Interface (GUI)
+To run the interactive viewer where you can adjust parameters in real-time:
+
+```bash
+python main-view.py
 ```
 
 ### Available Arguments

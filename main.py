@@ -37,9 +37,13 @@ def compute_sdf_capsules_batch(grid_coords, A, B, r_tube):
     # Return the minimum distance across this batch of capsules for each grid point
     return cp.min(dist, axis=1)
 
-def main(shape_type, distribution_type, connection_type, R_sphere, H_cylinder, R_cylinder,
-         R_inner_tube, R_outer_tube, N_pts, k_nn, r_tube, res, sigma_blur, lap_iters, seed, output):
-    np.random.seed(seed)  # Set seed for reproducibility
+def generate_mesh(shape_type, distribution_type, connection_type, R_sphere, H_cylinder, R_cylinder,
+                  R_inner_tube, R_outer_tube, N_pts, k_nn, r_tube, res, sigma_blur, lap_iters, seed):
+    """
+    Generates the trimesh object based on parameters.
+    Returns: trimesh.Trimesh object
+    """
+    np.random.seed(seed)
     print("Step 1: Sampling points...")
     if shape_type == "sphere":
         shape = Sphere(R_sphere)
@@ -111,6 +115,14 @@ def main(shape_type, distribution_type, connection_type, R_sphere, H_cylinder, R
     mesh = trimesh.Trimesh(vertices=verts, faces=faces,
                            vertex_normals=normals)
     filter_laplacian(mesh, iterations=lap_iters)
+    
+    return mesh
+
+def main(shape_type, distribution_type, connection_type, R_sphere, H_cylinder, R_cylinder,
+         R_inner_tube, R_outer_tube, N_pts, k_nn, r_tube, res, sigma_blur, lap_iters, seed, output):
+    
+    mesh = generate_mesh(shape_type, distribution_type, connection_type, R_sphere, H_cylinder, R_cylinder,
+                         R_inner_tube, R_outer_tube, N_pts, k_nn, r_tube, res, sigma_blur, lap_iters, seed)
 
     print("Step 9: Exporting the mesh...")
     mesh.export(output)

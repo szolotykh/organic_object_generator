@@ -3,3 +3,6 @@ scipy
 scikit-image
 trimesh
 cupy-cuda12x  # Change this to match your CUDA version (e.g., cupy-cuda11x)
+PyQt5
+pyvista
+pyvistaqt
